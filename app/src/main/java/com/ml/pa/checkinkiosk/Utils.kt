@@ -21,7 +21,6 @@ import kotlin.concurrent.thread
 
 
 class Utils(private val context: Context) {
-
     val SHARED_PREFERENCE_NAME = "checkinkiosk"
     val DEFAULT_KIOSK_PASSWORD = "frontdesk"
     val SETUP_URL =
