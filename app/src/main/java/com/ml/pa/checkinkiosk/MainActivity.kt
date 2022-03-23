@@ -232,7 +232,7 @@ class MainActivity : AppCompatActivity() {
             btnHome.visibility = View.GONE
             statusPanel.visibility = View.VISIBLE
             statusTitle.text = "One Moment"
-            statusDesc.text = "..."
+            statusDesc.text = "Loading ..."
             btnRetry.visibility = View.GONE
         }
     }
