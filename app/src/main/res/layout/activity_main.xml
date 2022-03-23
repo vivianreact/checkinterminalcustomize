@@ -54,7 +54,6 @@
         android:layout_height="match_parent"
         android:background="#0c284a"
         android:clickable="true"
-
         android:orientation="vertical"
         android:visibility="gone">
 
@@ -138,7 +137,6 @@
                     tools:ignore="SpeakableTextPresentCheck" />
             </LinearLayout>
         </ScrollView>
-
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
 
