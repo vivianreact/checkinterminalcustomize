@@ -44,19 +44,19 @@ class SettingActivity : AppCompatActivity() {
 
     private fun getValue() {
         //default data put here
-         var defregistrationDomain = "foodandhotelmalaysia.com.my"
-         var defcheckpointCode = "AU2ZSS" //default data put here
-         var defterminalID = "A102" //default data put here
-         var defcheckInMode = true // true means it is check in mode
-         var defcameraFacing = false // true means it is Front Camera
+         var defRegistrationDomain = "foodandhotelmalaysia.com.my"
+         var defCheckpointCode = "AU2ZSS" //default data put here
+         var defTerminalID = "A102" //default data put here
+         var defCheckInMode = true // true means it is check in mode
+         var defCameraFacing = false // true means it is Front Camera
 
         val sharedPref: SharedPreferences =
             getSharedPreferences(utils.SHARED_PREFERENCE_NAME, MODE_PRIVATE)
-        registrationDomain = sharedPref.getString("registrationDomain", defregistrationDomain) ?:defregistrationDomain
-        checkpointCode = sharedPref.getString("checkpointCode", defcheckpointCode)?:defcheckpointCode
-        terminalID = sharedPref.getString("terminalID", defterminalID) ?: defterminalID
-        checkInMode = sharedPref.getBoolean("checkInMode", defcheckInMode)
-        cameraFacing = sharedPref.getBoolean("cameraFacing", defcameraFacing)
+        registrationDomain = sharedPref.getString("registrationDomain", defRegistrationDomain) ?:defRegistrationDomain
+        checkpointCode = sharedPref.getString("checkpointCode", defCheckpointCode)?:defCheckpointCode
+        terminalID = sharedPref.getString("terminalID", defTerminalID) ?: defTerminalID
+        checkInMode = sharedPref.getBoolean("checkInMode", defCheckInMode)
+        cameraFacing = sharedPref.getBoolean("cameraFacing", defCameraFacing)
 
         tfRegistrationDomain.setText(registrationDomain)
         tfCheckpointCode.setText(checkpointCode)

@@ -188,8 +188,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun runAndPrint(registrationCode: String) {
-
-        var checkInModeString = if (checkInMode) "in" else "out"
+        val checkInModeString = if (checkInMode) "in" else "out"
         utils.run("https",
             registrationDomain,
             utils.CHECK_IN_API + "&qrcode=$registrationCode&terminal=$terminalID&checkpoint=$checkpointCode&mode=$checkInModeString",
