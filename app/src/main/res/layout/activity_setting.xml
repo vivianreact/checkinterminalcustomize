@@ -38,44 +38,25 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
-                android:text="Printer IP Address"
+                android:text="Check Point Code"
                 android:textColor="@color/white"
                 android:textStyle="bold" />
 
             <EditText
-                android:id="@+id/ip_address"
+                android:id="@+id/checkpoint_code"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:background="@color/white"
                 android:minHeight="48dp"
                 android:padding="10dp"
-                android:text="192.168.10.60" />
+                android:text="AU2ZSS" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
-                android:text="Printer Port Number"
-                android:textColor="@color/white"
-                android:textStyle="bold" />
-
-            <EditText
-                android:id="@+id/port_number"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:background="@color/white"
-                android:inputType="number"
-                android:minHeight="48dp"
-                android:padding="10dp"
-                android:text="9100" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:text="Kiosk ID"
+                android:text="Terminal ID"
                 android:textColor="@color/white"
                 android:textStyle="bold" />
 
@@ -87,8 +68,38 @@
                 android:background="@color/white"
                 android:minHeight="48dp"
                 android:padding="10dp"
-                android:text="kiosk" />
+                android:text="A102" />
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="Check In Mode"
+                android:textColor="@color/white"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Check In"
+                    android:textColor="@color/white"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <Switch
+                    android:id="@+id/checkin_mode"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:checked="true"
+                    android:trackTint="@color/white" />
+            </LinearLayout>
 
             <TextView
                 android:layout_width="match_parent"

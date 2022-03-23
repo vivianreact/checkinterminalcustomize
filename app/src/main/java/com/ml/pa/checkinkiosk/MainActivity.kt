@@ -239,7 +239,7 @@ class MainActivity : AppCompatActivity() {
 
                     utils.run("https",
                         registrationDomain,
-                        utils.PRINT_LOG_API + "&r=$registrationCode&k=$kioskID",
+                        utils.CHECK_IN_API + "&qrcode=$registrationCode&terminal=$kioskID&checkpoint=$checkpointCode&mode=$checkInMode",
                         { },
                         { error ->
                             printErrorMessage = "Unable to send log to server"
