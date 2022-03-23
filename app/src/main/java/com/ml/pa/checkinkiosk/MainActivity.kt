@@ -294,7 +294,7 @@ class MainActivity : AppCompatActivity() {
         val sharedPref: SharedPreferences =
             getSharedPreferences(utils.SHARED_PREFERENCE_NAME, MODE_PRIVATE)
         registrationDomain = sharedPref.getString("registrationDomain", "") ?: ""
-        checkpointCode = sharedPref.getString("checkpointCode", utils.DEFAULT_IP_ADDRESS)!!
+        checkpointCode = sharedPref.getString("checkpointCode", "") ?: ""
         terminalID = sharedPref.getString("terminalID", "") ?: ""
         kioskPassword =
             sharedPref.getString("kioskPassword", utils.DEFAULT_KIOSK_PASSWORD)

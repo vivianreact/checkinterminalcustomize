@@ -24,18 +24,10 @@ class Utils(private val context: Context) {
 
     val SHARED_PREFERENCE_NAME = "polaroid"
     val DEFAULT_KIOSK_PASSWORD = "frontdesk"
-    val GET_BADGE_API =
-        "index.php?option=com_platform&view=api&task=get_profile_badge&q="
     val SETUP_URL =
         "index.php?option=com_platform&view=api&task=scan_print_badge_setup"
-    val CALIBRATE_URL =
-        "admin/cgi-bin/function.cgi?func=calibration"
     val CHECK_IN_API =
         "index.php?option=com_platform&view=api&task=terminal_check_in"
-//&checkpoint=?&qrcode=?&terminal=?&mode=?
-
-    val DEFAULT_IP_ADDRESS = "10.10.10.20"
-    val DEFAULT_PORT = 9100
     val DEFAULT_LOGO = "@drawable/applogo"
     val RESCAN_TIME: Long = 1000
 
