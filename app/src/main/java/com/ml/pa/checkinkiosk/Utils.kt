@@ -111,7 +111,7 @@ class Utils(private val context: Context) {
                             failedListener.invoke("Invalid Request due to $e")
                         }
                     } else {
-                        failedListener.invoke("Device IP Address is unreachable [B03]")
+                        failedListener.invoke("Domain is unreachable [B03]")
                     }
                 }
             }
