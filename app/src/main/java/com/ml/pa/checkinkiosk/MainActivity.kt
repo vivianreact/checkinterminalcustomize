@@ -11,20 +11,16 @@ import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import com.example.tscdll.TscWifiActivity
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanIntentResult
 import com.journeyapps.barcodescanner.ScanOptions
 import okhttp3.Response
 import org.json.JSONObject
-import java.net.InetAddress
-import java.net.UnknownHostException
 import kotlin.concurrent.thread
 
 
 class MainActivity : AppCompatActivity() {
     private val utils = Utils(this)
-    private val tscDll = TscWifiActivity()
 
     private lateinit var btnScan: Button
     private lateinit var btnSetting: Button
@@ -38,10 +34,11 @@ class MainActivity : AppCompatActivity() {
     private lateinit var statusPanel: LinearLayout
 
     private var registrationDomain = ""
-    private var scannerIP = utils.DEFAULT_IP_ADDRESS
-    private var scannerPort = utils.DEFAULT_PORT
-    private var kioskID = ""
-    private var cameraFacing = false
+    private var checkpointCode = ""
+    private var terminalID = ""
+    private var checkInMode: Boolean = false
+    private var cameraFacing: Boolean = false
+
     private var kioskPassword = utils.DEFAULT_KIOSK_PASSWORD
     private var logo = utils.DEFAULT_LOGO
 
@@ -101,46 +98,27 @@ class MainActivity : AppCompatActivity() {
         registerForActivityResult(ScanContract()) { result: ScanIntentResult ->
             if (result.contents != null) {
                 processPrintingStatus()
-                utils.run("https",
-                    registrationDomain,
-                    utils.GET_BADGE_API + result.contents,
-                    { response -> runAndPrint(response) },
-                    { error -> processPrintFail(error) }
-                )
+                runAndPrint(result.contents)
             }
         }
 
     private fun startScanner() {
-        if (scannerIP == "") {
+        if (checkpointCode == "") {
             utils.showAlertBox("Error", "Please setup your printer")
         } else {
             thread {
-                var reachable = false
-                try {
-                    if (InetAddress.getByName(scannerIP).isReachable(1000)) {
-                        reachable = true
-                    }
-                } catch (e: UnknownHostException) {
-                    utils.showAlert("Device IP Address is unreachable [B02]: $e", true)
-                    processPrintFail("Device IP Address is unreachable [B02]")
-                } catch (e: Exception) {
-                    utils.showAlert("Device IP Address is unreachable [B01]: $e", true)
-                    processPrintFail("Device IP Address is unreachable [B01]")
-                }
+
                 runOnUiThread {
-                    if (reachable) {
-                        val options = ScanOptions()
-                        options.setDesiredBarcodeFormats(ScanOptions.QR_CODE)
-                        options.setPrompt("Scan a barcode")
-                        options.setCameraId(if (cameraFacing) 1 else 0) //0: back camera,1: front camera
-                        options.captureActivity = CaptureActivityPortrait::class.java
-                        options.setBeepEnabled(true)
-                        options.setBarcodeImageEnabled(true)
-                        barcodeLauncher.launch(options)
-                    } else {
-                        utils.showAlert("Device IP Address is unreachable [B03]", true)
-                        processPrintFail("Device IP Address is unreachable [B03]")
-                    }
+
+                    val options = ScanOptions()
+                    options.setDesiredBarcodeFormats(ScanOptions.QR_CODE)
+                    options.setPrompt("Scan a barcode")
+                    options.setCameraId(if (cameraFacing) 1 else 0) //0: back camera,1: front camera
+                    options.captureActivity = CaptureActivityPortrait::class.java
+                    options.setBeepEnabled(true)
+                    options.setBarcodeImageEnabled(true)
+                    barcodeLauncher.launch(options)
+
                 }
             }
         }
@@ -209,110 +187,44 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun runAndPrint(response: Response) {
-        var printStatus = false
-        var printErrorMessage = "Unable to print"
+    private fun runAndPrint(registrationCode: String) {
 
-        try {
-            val data = response.body()!!.string()
-            val jsonResponse = JSONObject(data)
-            val status =
-                if (jsonResponse.has("status")) jsonResponse.getString("status") else "0"
-            val message =
-                if (jsonResponse.has("message")) jsonResponse.getString("message") else ""
-            if (status == "1") {
-                val jsonData = jsonResponse.getJSONObject("data")
-                val urlString =
-                    if (jsonData.has("url")) jsonData.getString("url") else null
-                val registrationCode =
-                    if (jsonData.has("code")) jsonData.getString("code") else null
-                val paperWidth =
-                    if (jsonData.has("paper_width")) jsonData.getString("paper_width")
-                        .toInt() else 0
-                val paperHeight =
-                    if (jsonData.has("paper_height")) jsonData.getString("paper_height")
-                        .toInt() else 0
-                if (urlString != null && paperWidth == 0 && paperHeight == 0) {
-                    printStatus = true
+        var checkInModeString = if (checkInMode) "in" else "out"
+        utils.run("https",
+            registrationDomain,
+            utils.CHECK_IN_API + "&qrcode=$registrationCode&terminal=$terminalID&checkpoint=$checkpointCode&mode=$checkInModeString",
+            { response ->
 
-                    print(urlString, paperWidth, paperHeight)
-
-                    utils.run("https",
-                        registrationDomain,
-                        utils.CHECK_IN_API + "&qrcode=$registrationCode&terminal=$kioskID&checkpoint=$checkpointCode&mode=$checkInMode",
-                        { },
-                        { error ->
-                            printErrorMessage = "Unable to send log to server"
-                            utils.showAlert(
-                                "Unable to add print log on server due to $error ",
-                                true
-                            )
-                        }
-                    )
-                } else {
-                    printErrorMessage = "Invalid QR Code / Setting"
+                try {
+                    val data = response.body()!!.string()
+                    val jsonResponse = JSONObject(data)
+                    val status =
+                        if (jsonResponse.has("status")) jsonResponse.getString("status") else "0"
+                    val title =
+                        if (jsonResponse.has("title")) jsonResponse.getString("title") else ""
+                    val error =
+                        if (jsonResponse.has("error")) jsonResponse.getString("error") else ""
+                    val heading =
+                        if (jsonResponse.has("heading")) jsonResponse.getString("heading") else ""
+                    val message =
+                        if (jsonResponse.has("message")) jsonResponse.getString("message") else ""
+                    if (status == "1") {
+                        processPrintSuccess(title, heading + "\n" + message)
+                    } else {
+                        processPrintFail(title, heading + "\n" + message+"\n"+error)
+                    }
+                } catch (e: Exception) {
+                    processPrintFail("FAIL", "Unable to get data")
+                    utils.showAlert("Could not check in due to : $e", true)
                 }
-            } else {
-                printErrorMessage = message
+            },
+            { error ->
+                processPrintFail("FAIL", "Unable to check in")
+                utils.showAlert("Unable to check in due to $error ", true)
             }
-        } catch (e: Exception) {
-            utils.showAlert("Could not run and print: $e", true)
-        }
+        )
 
-        if (!printStatus) {
-            processPrintFail(printErrorMessage)
-        }
-    }
 
-    private fun print(fileUrl: String, paperWidth: Int, paperHeight: Int) {
-        var printStatus = false
-        var printErrorMessage = "Unable to print! Please contact administrator"
-        val speed = 5
-        val density = 10
-        val sensor = 3
-        val sensorDistance = 0
-        val sensorOffset = 0
-        try {
-            tscDll.openport(scannerIP, scannerPort)
-            tscDll.setup(
-                paperWidth,
-                paperHeight,
-                speed,
-                density,
-                sensor,
-                sensorDistance,
-                sensorOffset
-            )
-            tscDll.clearbuffer()
-            val bitmap: Bitmap? = utils.getBitmapFromURL(fileUrl)
-            if (bitmap != null) {
-                tscDll.sendbitmap(0, 0, bitmap)
-                tscDll.printlabel(1, 1)
-                val printerStatus = tscDll.printerstatus()
-                if (printerStatus == "00") {
-
-                    printStatus = true
-                } else {
-                    printErrorMessage = "Unable to print badge"
-                }
-            } else {
-                printErrorMessage = "Image is not valid"
-            }
-
-            tscDll.clearbuffer()
-            tscDll.closeport(1000)
-        } catch (e: NullPointerException) {
-            printErrorMessage = "Printer offline"
-            utils.showAlert("Printer offline to $e (Might be Invalid IP Address)", true)
-        } catch (e: Exception) {
-            printErrorMessage = "Unable to print due to setup problem [A01]"
-            utils.showAlert("Unable to print due to $e", true)
-        }
-        if (printStatus) {
-            processPrintSuccess()
-        } else {
-            processPrintFail(printErrorMessage)
-        }
     }
 
     private fun processPrintingStatus() {
@@ -320,17 +232,17 @@ class MainActivity : AppCompatActivity() {
             btnHome.visibility = View.GONE
             statusPanel.visibility = View.VISIBLE
             statusTitle.text = "One Moment"
-            statusDesc.text = "Printing Badge ..."
+            statusDesc.text = "..."
             btnRetry.visibility = View.GONE
         }
     }
 
-    private fun processPrintSuccess() {
+    private fun processPrintSuccess(sTitle: String, message: String) {
         runOnUiThread {
             btnHome.visibility = View.VISIBLE
             statusPanel.visibility = View.VISIBLE
-            statusTitle.text = "Print Badge Success"
-            statusDesc.text = "Badge is printed successfully"
+            statusTitle.text = sTitle
+            statusDesc.text = message
         }
         val handler = Handler(Looper.getMainLooper())
         handler.postDelayed({
@@ -339,12 +251,12 @@ class MainActivity : AppCompatActivity() {
         }, utils.RESCAN_TIME)
     }
 
-    private fun processPrintFail(message: String) {
+    private fun processPrintFail(sTitle: String, message: String) {
         utils.showAlert("Print Badge Failed: $message", true)
         runOnUiThread {
             btnHome.visibility = View.VISIBLE
             statusPanel.visibility = View.VISIBLE
-            statusTitle.text = "Print Badge Fail"
+            statusTitle.text = sTitle
             statusDesc.text = message
             btnRetry.visibility = View.VISIBLE
         }
@@ -382,12 +294,12 @@ class MainActivity : AppCompatActivity() {
         val sharedPref: SharedPreferences =
             getSharedPreferences(utils.SHARED_PREFERENCE_NAME, MODE_PRIVATE)
         registrationDomain = sharedPref.getString("registrationDomain", "") ?: ""
-        scannerIP = sharedPref.getString("scannerIP", utils.DEFAULT_IP_ADDRESS)!!
-        scannerPort = sharedPref.getInt("scannerPort", utils.DEFAULT_PORT)
-        kioskID = sharedPref.getString("kioskID", "") ?: ""
+        checkpointCode = sharedPref.getString("checkpointCode", utils.DEFAULT_IP_ADDRESS)!!
+        terminalID = sharedPref.getString("terminalID", "") ?: ""
         kioskPassword =
             sharedPref.getString("kioskPassword", utils.DEFAULT_KIOSK_PASSWORD)
                 ?: utils.DEFAULT_KIOSK_PASSWORD
+        checkInMode = sharedPref.getBoolean("checkInMode", true)
         cameraFacing = sharedPref.getBoolean("cameraFacing", false)
         logo = sharedPref.getString("logo", utils.DEFAULT_LOGO) ?: utils.DEFAULT_LOGO
         setLogo()
