@@ -36,7 +36,7 @@
         <Button
             android:id="@+id/btnSetting"
             android:layout_width="match_parent"
-            android:layout_height="300dp"
+            android:layout_height="100dp"
             android:background="#0c284a"
             android:backgroundTint="#0c284a"
             android:elevation="0dp"
@@ -54,78 +54,91 @@
         android:layout_height="match_parent"
         android:background="#0c284a"
         android:clickable="true"
-        android:gravity="center"
+
         android:orientation="vertical"
         android:visibility="gone">
 
-        <ImageView
-            android:id="@+id/logo_view2"
-            android:layout_width="300dp"
-            android:layout_height="200dp"
-            android:layout_marginBottom="30dp"
-            android:contentDescription="logo" />
-
-        <TextView
-            android:id="@+id/status_title"
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="20dp"
-            android:layout_marginBottom="10dp"
-            android:gravity="center"
-            android:textColor="@color/white"
-            android:textSize="18sp"
-            android:textStyle="bold" />
+            android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/status_desc"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="20dp"
-            android:layout_marginBottom="50dp"
-            android:gravity="center"
-            android:textColor="@color/white"
-            android:textSize="22sp"
-            android:textStyle="bold" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="vertical">
 
-        <Button
-            android:id="@+id/btnRetry"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="40dp"
-            android:backgroundTint="#3E5786"
-            android:paddingHorizontal="10dp"
-            android:paddingVertical="20dp"
-            android:text="Retry"
-            android:textColor="@color/white"
-            android:textSize="22sp"
-            android:visibility="gone" />
+                <ImageView
+                    android:id="@+id/logo_view2"
+                    android:layout_width="300dp"
+                    android:layout_height="200dp"
+                    android:layout_marginBottom="30dp"
+                    android:contentDescription="logo" />
 
-        <Button
-            android:id="@+id/btnHome"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="40dp"
-            android:backgroundTint="#3E5786"
-            android:paddingHorizontal="10dp"
-            android:paddingVertical="20dp"
-            android:text="Home"
-            android:textColor="@color/white"
-            android:textSize="22sp"
-            android:visibility="visible" />
+                <TextView
+                    android:id="@+id/status_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="20dp"
+                    android:layout_marginBottom="10dp"
+                    android:gravity="center"
+                    android:textColor="@color/white"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
 
-        <Button
-            android:id="@+id/btnSetting2"
-            android:layout_width="match_parent"
-            android:layout_height="180dp"
-            android:background="#0c284a"
-            android:backgroundTint="#0c284a"
-            android:elevation="0dp"
-            android:shadowColor="#0c284a"
-            android:shadowDx="0"
-            android:shadowDy="0"
-            android:shadowRadius="0"
-            android:stateListAnimator="@null"
-            tools:ignore="SpeakableTextPresentCheck" />
+                <TextView
+                    android:id="@+id/status_desc"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="20dp"
+                    android:layout_marginBottom="50dp"
+                    android:gravity="center"
+                    android:textColor="@color/white"
+                    android:textSize="22sp"
+                    android:textStyle="bold" />
+
+                <Button
+                    android:id="@+id/btnRetry"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="40dp"
+                    android:backgroundTint="#3E5786"
+                    android:paddingHorizontal="10dp"
+                    android:paddingVertical="20dp"
+                    android:text="Retry"
+                    android:textColor="@color/white"
+                    android:textSize="22sp"
+                    android:visibility="gone" />
+
+                <Button
+                    android:id="@+id/btnHome"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="40dp"
+                    android:backgroundTint="#3E5786"
+                    android:paddingHorizontal="10dp"
+                    android:paddingVertical="20dp"
+                    android:text="Home"
+                    android:textColor="@color/white"
+                    android:textSize="22sp"
+                    android:visibility="visible" />
+
+                <Button
+                    android:id="@+id/btnSetting2"
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp"
+                    android:background="#0c284a"
+                    android:backgroundTint="#0c284a"
+                    android:elevation="0dp"
+                    android:shadowColor="#0c284a"
+                    android:shadowDx="0"
+                    android:shadowDy="0"
+                    android:shadowRadius="0"
+                    android:stateListAnimator="@null"
+                    tools:ignore="SpeakableTextPresentCheck" />
+            </LinearLayout>
+        </ScrollView>
+
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
 
