@@ -29,7 +29,7 @@
             android:backgroundTint="#3E5786"
             android:paddingHorizontal="10dp"
             android:paddingVertical="20dp"
-            android:text="Scan &amp; Print"
+            android:text="Scan"
             android:textColor="@color/white"
             android:textSize="22sp" />
 
