@@ -1,4 +1,4 @@
-package com.ml.pa.checkinkiosk
+package com.ml.pa.checkinterminal
 
 import android.app.Activity
 import android.app.AlertDialog
@@ -11,20 +11,14 @@ import android.os.Looper
 import android.text.InputType
 import android.view.*
 import android.widget.*
-import com.example.tscdll.TscWifiActivity
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.client.android.BeepManager
 import com.journeyapps.barcodescanner.*
-import okhttp3.Response
 import org.json.JSONObject
-import java.lang.Thread.sleep
 import java.util.*
-
 
 class ContinuousCapture : Activity() {
     private val utils = Utils(this)
-    private var tscDll = TscWifiActivity()
-
     private lateinit var progressDialog: AlertDialog
     private lateinit var barcodeView: DecoratedBarcodeView
     private lateinit var beepManager: BeepManager
@@ -157,8 +151,6 @@ class ContinuousCapture : Activity() {
         ll.addView(tvText)
         builder.setView(ll)
         progressDialog = builder.create()
-
-
     }
 
     override fun onResume() {
@@ -169,10 +161,6 @@ class ContinuousCapture : Activity() {
     override fun onPause() {
         super.onPause()
         barcodeView.pause()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {

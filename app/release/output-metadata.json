@@ -4,15 +4,15 @@
     "type": "APK",
     "kind": "Directory"
   },
-  "applicationId": "com.ml.pa.checkinkiosk",
+  "applicationId": "com.ml.pa.checkinterminal",
   "variantName": "release",
   "elements": [
     {
       "type": "SINGLE",
       "filters": [],
       "attributes": [],
-      "versionCode": 301,
-      "versionName": "3.0.1",
+      "versionCode": 303,
+      "versionName": "3.0.3",
       "outputFile": "app-release.apk"
     }
   ],

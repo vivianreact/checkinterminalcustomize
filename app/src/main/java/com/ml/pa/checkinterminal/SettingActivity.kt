@@ -1,4 +1,4 @@
-package com.ml.pa.checkinkiosk
+package com.ml.pa.checkinterminal
 
 import android.annotation.SuppressLint
 import android.content.Intent

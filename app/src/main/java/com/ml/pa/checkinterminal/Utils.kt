@@ -1,4 +1,4 @@
-package com.ml.pa.checkinkiosk
+package com.ml.pa.checkinterminal
 
 import android.R
 import android.app.Activity
@@ -24,7 +24,7 @@ import kotlin.concurrent.thread
 
 
 class Utils(private val context: Context) {
-    val SHARED_PREFERENCE_NAME = "checkinkiosk"
+    val SHARED_PREFERENCE_NAME = "checkinterminal"
     val DEFAULT_KIOSK_PASSWORD = "frontdesk"
     val SETUP_URL =
         "index.php?option=com_platform&view=api&task=scan_print_badge_setup"

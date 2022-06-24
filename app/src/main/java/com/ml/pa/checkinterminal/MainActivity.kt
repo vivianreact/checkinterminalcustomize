@@ -1,28 +1,17 @@
-package com.ml.pa.checkinkiosk
+package com.ml.pa.checkinterminal
 
 import android.content.Intent
 import android.content.SharedPreferences
-import android.graphics.Bitmap
 import android.graphics.Typeface
 import android.graphics.drawable.AnimationDrawable
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.text.InputType
 import android.view.Gravity
-import android.view.View
 import android.widget.*
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
-import com.journeyapps.barcodescanner.ScanContract
-import com.journeyapps.barcodescanner.ScanIntentResult
-import com.journeyapps.barcodescanner.ScanOptions
 import okhttp3.Response
 import org.json.JSONObject
-import java.net.InetAddress
-import java.net.UnknownHostException
-import kotlin.concurrent.thread
 
 
 class MainActivity : AppCompatActivity() {

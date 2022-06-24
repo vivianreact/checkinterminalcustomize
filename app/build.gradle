@@ -7,11 +7,11 @@ android {
     compileSdk 31
 
     defaultConfig {
-        applicationId "com.ml.pa.checkinkiosk"
+        applicationId "com.ml.pa.checkinterminal"
         minSdk 26
         targetSdk 31
-        versionCode 302
-        versionName "3.0.2"
+        versionCode 303
+        versionName "3.0.3"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
