@@ -10,8 +10,8 @@ android {
         applicationId "com.ml.pa.checkinterminal"
         minSdk 26
         targetSdk 31
-        versionCode 305
-        versionName "3.0.5"
+        versionCode 306
+        versionName "3.0.6"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
