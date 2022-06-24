@@ -25,7 +25,7 @@ class MainActivity : AppCompatActivity() {
     private var registrationDomain = ""
     private var checkpointCode = ""
     private var terminalID = ""
-    private var checkInMode: Boolean = false
+    private var checkInMode: Boolean = true
     private var cameraFacing: Boolean = false
 
     private var kioskPassword = utils.DEFAULT_KIOSK_PASSWORD

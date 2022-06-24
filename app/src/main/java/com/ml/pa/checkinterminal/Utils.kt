@@ -10,8 +10,10 @@ import android.graphics.BitmapFactory
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.util.Log
+import android.view.Gravity
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import okhttp3.*
@@ -169,6 +171,8 @@ class Utils(private val context: Context) {
             dialogBuilder.setMessage(message)
             dialogBuilder.create()
             val dialog = dialogBuilder.show()
+            val messageText = dialog.findViewById<TextView>(R.id.message)
+            messageText!!.gravity = Gravity.CENTER
             immediateAction(dialog)
         }
     }
