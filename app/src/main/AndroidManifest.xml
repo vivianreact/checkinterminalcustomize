@@ -21,15 +21,16 @@
         android:theme="@style/Theme.Checkinkiosk"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".ContinuousCapture"
+            android:configChanges="keyboardHidden|orientation|screenSize" />
+        <activity
             android:name="com.ml.pa.checkinkiosk.SettingActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:exported="false"
             android:label="@string/title_activity_setting" />
-        <activity
-            android:name="com.ml.pa.checkinkiosk.CaptureActivityPortrait"
-            android:exported="false"
-            tools:ignore="Instantiatable" />
-        <activity
+         <activity
             android:name="com.ml.pa.checkinkiosk.MainActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:exported="true"
             android:theme="@style/Theme.AppCompat.DayNight.NoActionBar">
             <intent-filter>

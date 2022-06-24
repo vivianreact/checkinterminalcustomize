@@ -1,14 +1,17 @@
 package com.ml.pa.checkinkiosk
 
+import android.R
 import android.app.Activity
 import android.content.Context
 import android.content.Context.CONNECTIVITY_SERVICE
+import android.content.DialogInterface
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.util.Log
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import okhttp3.*
@@ -28,8 +31,37 @@ class Utils(private val context: Context) {
     val CHECK_IN_API =
         "index.php?option=com_platform&view=api&task=terminal_check_in"
     val DEFAULT_LOGO = "@drawable/applogo"
-    val RESCAN_TIME: Long = 1000
+    val RESCAN_TIME: Long = 1 * 1000
 
+    fun setLogo(logo: String, logoView: ImageView) {
+        if (logo != DEFAULT_LOGO && logo != "") {
+            getBitmapFromURL(logo) { mIcon11 ->
+                (context as Activity).runOnUiThread {
+                    logoView.setImageBitmap(mIcon11)
+                }
+            }
+        }
+    }
+    fun getBitmapFromURL(src: String?, callback: (Bitmap) -> Unit) {
+        thread {
+            if (isOnline()) {
+                val urlOpen = URL(src).openConnection() as HttpURLConnection
+                try {
+                    val ins = urlOpen.inputStream
+                    val image = BitmapFactory.decodeStream(ins)
+                    ins.close()
+                    urlOpen.disconnect()
+                    callback(image)
+                } catch (e: IOException) {
+                    showAlert(e.toString(), true)
+                } catch (e: Exception) {
+                    showAlert(e.toString(), true)
+                }
+            } else {
+                showAlert("No Internet Connection")
+            }
+        }
+    }
     private fun isOnline(): Boolean {
         val cm = (context as Activity).getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
         val n = cm.activeNetwork
@@ -112,26 +144,6 @@ class Utils(private val context: Context) {
         }
     }
 
-    fun getBitmapFromURL(src: String?): Bitmap? {
-        try {
-            return if (isOnline()) {
-                val url = URL(src)
-                val connection =
-                    url.openConnection() as HttpURLConnection
-                connection.doInput = true
-                connection.connect()
-                val input = connection.inputStream
-                BitmapFactory.decodeStream(input)
-            } else {
-                showAlert("No Internet Connection")
-                null
-            }
-        } catch (e: IOException) {
-            showAlert(e.toString(), true)
-            return null
-        }
-    }
-
     fun showAlert(m: String, silent: Boolean = false) {
         val message: String = if (m != "") m else "Nothing to be shown"
         if (!silent) (context as Activity).runOnUiThread {
@@ -140,13 +152,24 @@ class Utils(private val context: Context) {
         Log.d("polaroidmessage", message)
     }
 
-    fun showAlertBox(title: String, message: String) {
+    fun showAlertBox(
+        title: String,
+        message: String,
+        onClickAction: () -> Unit = {},
+        immediateAction: (dialog: DialogInterface) -> Unit = {}
+    ) {
         showAlert(message, true)
         (context as Activity).runOnUiThread {
             val dialogBuilder = AlertDialog.Builder(context)
             dialogBuilder.setTitle(title)
+            dialogBuilder.setCancelable(false)
+            dialogBuilder.setPositiveButton(
+                context.getResources().getString(R.string.ok)
+            ) { _, _ -> onClickAction() }
             dialogBuilder.setMessage(message)
-            dialogBuilder.create().show()
+            dialogBuilder.create()
+            val dialog = dialogBuilder.show()
+            immediateAction(dialog)
         }
     }
 

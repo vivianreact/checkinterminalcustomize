@@ -44,7 +44,7 @@ class SettingActivity : AppCompatActivity() {
 
     private fun getValue() {
         //default data put here
-         var defRegistrationDomain = "foodandhotelmalaysia.com.my"
+         var defRegistrationDomain = "registration.frontdesk.my"
          var defCheckpointCode = "AU2ZSS" //default data put here
          var defTerminalID = "A102" //default data put here
          var defCheckInMode = true // true means it is check in mode
