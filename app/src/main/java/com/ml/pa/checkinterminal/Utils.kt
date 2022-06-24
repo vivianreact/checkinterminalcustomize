@@ -34,6 +34,7 @@ class Utils(private val context: Context) {
         "index.php?option=com_platform&view=api&task=terminal_check_in"
     val DEFAULT_LOGO = "@drawable/applogo"
     val RESCAN_TIME: Long = 1 * 1000
+    val CAMERA_PERMISSION_CODE = 100
 
     fun setLogo(logo: String, logoView: ImageView) {
         if (logo != DEFAULT_LOGO && logo != "") {
@@ -44,6 +45,7 @@ class Utils(private val context: Context) {
             }
         }
     }
+
     fun getBitmapFromURL(src: String?, callback: (Bitmap) -> Unit) {
         thread {
             if (isOnline()) {
@@ -64,6 +66,7 @@ class Utils(private val context: Context) {
             }
         }
     }
+
     private fun isOnline(): Boolean {
         val cm = (context as Activity).getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
         val n = cm.activeNetwork

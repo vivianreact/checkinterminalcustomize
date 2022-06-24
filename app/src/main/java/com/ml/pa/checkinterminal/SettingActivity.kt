@@ -44,10 +44,10 @@ class SettingActivity : AppCompatActivity() {
 
     private fun getValue() {
         //default data put here
-         var defRegistrationDomain = "registration.oilandgas-asia.com"
-//         var defRegistrationDomain = "registration.frontdesk.my"
-         var defCheckpointCode = "6QLMFC" //default data put here
-//         var defCheckpointCode = "AU2ZSS" //default data put here
+//         var defRegistrationDomain = "registration.oilandgas-asia.com"
+         var defRegistrationDomain = "registration.frontdesk.my"
+//         var defCheckpointCode = "6QLMFC" //default data put here
+         var defCheckpointCode = "AU2ZSS" //default data put here
          var defTerminalID = "A101" //default data put here
          var defCheckInMode = true // true means it is check in mode
          var defCameraFacing = false // true means it is Front Camera

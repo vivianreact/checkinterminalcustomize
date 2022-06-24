@@ -1,8 +1,10 @@
 package com.ml.pa.checkinterminal
 
+import android.Manifest
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.graphics.Typeface
 import android.os.Bundle
@@ -30,13 +32,61 @@ class ContinuousCapture : Activity() {
     private var lastText: String = ""
     private var registrationDomain = ""
     private var checkpointCode = ""
-    private var checkInMode: Boolean = false
+    private var checkInMode: Boolean = true
     private var kioskPassword = utils.DEFAULT_KIOSK_PASSWORD
     private var terminalID = ""
     private var cameraFacing = false
     private var isScanning = false
     private var showProgress = false
+    private var barcodeInitialized = false
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.continuous_scan)
+        viewfinderView = findViewById(R.id.zxing_viewfinder_view)
+        progress = ProgressBar(this)
+        beepManager = BeepManager(this)
+        logoView = findViewById(R.id.logo_view)
+        btnHome = findViewById(R.id.btn_home)
+        btnHome.setOnClickListener { setupHomeButton() }
+        getValue()
+        if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(arrayOf(Manifest.permission.CAMERA), utils.CAMERA_PERMISSION_CODE)
+        } else {
+            setupBarcode()
+        }
+        setupProgressBar()
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String?>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == utils.CAMERA_PERMISSION_CODE) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                setupBarcode()
+            } else {
+                onBackPressed()
+            }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (barcodeInitialized)
+            barcodeView.resume()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        barcodeView.pause()
+    }
+
+    override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
+        return barcodeView.onKeyDown(keyCode, event) || super.onKeyDown(keyCode, event)
+    }
 
     private val callback: BarcodeCallback = object : BarcodeCallback {
         override fun barcodeResult(result: BarcodeResult) {
@@ -54,71 +104,7 @@ class ContinuousCapture : Activity() {
         }
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.continuous_scan)
-
-        progress = ProgressBar(this)
-        beepManager = BeepManager(this)
-        logoView = findViewById(R.id.logo_view)
-        btnHome = findViewById(R.id.btn_home)
-        btnHome.setOnClickListener {
-            val ll = LinearLayout(this)
-            ll.orientation = LinearLayout.VERTICAL
-            ll.gravity = Gravity.CENTER
-            val llParam = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            )
-            llParam.setMargins(20, 20, 20, 0)
-
-            val tvText = TextView(this)
-            tvText.text = "Please Enter Password"
-            tvText.setTypeface(null, Typeface.BOLD)
-            tvText.textSize = 18f
-            tvText.layoutParams = llParam
-
-            val input = EditText(this)
-            val llParam2 = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            )
-            llParam2.setMargins(20, 10, 20, 0)
-            input.layoutParams = llParam2
-            input.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
-
-            val builder: android.app.AlertDialog.Builder = android.app.AlertDialog.Builder(this)
-            builder.setCancelable(true)
-            ll.addView(tvText)
-            ll.addView(input)
-            builder.setView(ll)
-            builder.setPositiveButton(
-                "OK"
-            ) { dialog, _ ->
-                if (input.text.toString() == kioskPassword) {
-                    dialog.dismiss()
-                    onBackPressed()
-                } else {
-                    utils.showAlertBox("Wrong Password!", "Please contact administrator")
-                }
-            }
-            builder.setNegativeButton(
-                "Cancel"
-            ) { dialog, which -> dialog.cancel() }
-            builder.show()
-        }
-
-        getValue()
-
-        viewfinderView = findViewById(R.id.zxing_viewfinder_view)
-        barcodeView = findViewById(R.id.zxing_barcode_scanner)
-        val formats: Collection<BarcodeFormat> =
-            Arrays.asList(BarcodeFormat.QR_CODE, BarcodeFormat.CODE_39)
-        barcodeView.barcodeView.decoderFactory = DefaultDecoderFactory(formats)
-        barcodeView.initializeFromIntent(intent)
-        barcodeView.decodeContinuous(callback)
-        barcodeView.cameraSettings.requestedCameraId = if (cameraFacing) 1 else 0
-
+    private fun setupProgressBar() {
         val ll = LinearLayout(this)
         ll.orientation = LinearLayout.VERTICAL
         ll.gravity = Gravity.CENTER
@@ -153,18 +139,63 @@ class ContinuousCapture : Activity() {
         progressDialog = builder.create()
     }
 
-    override fun onResume() {
-        super.onResume()
-        barcodeView.resume()
+    private fun setupHomeButton() {
+        val ll = LinearLayout(this)
+        ll.orientation = LinearLayout.VERTICAL
+        ll.gravity = Gravity.CENTER
+        val llParam = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT
+        )
+        llParam.setMargins(20, 20, 20, 0)
+
+        val tvText = TextView(this)
+        tvText.text = "Please Enter Password"
+        tvText.setTypeface(null, Typeface.BOLD)
+        tvText.textSize = 18f
+        tvText.layoutParams = llParam
+
+        val input = EditText(this)
+        val llParam2 = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT
+        )
+        llParam2.setMargins(20, 10, 20, 0)
+        input.layoutParams = llParam2
+        input.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+
+        val builder: AlertDialog.Builder = AlertDialog.Builder(this)
+        builder.setCancelable(true)
+        ll.addView(tvText)
+        ll.addView(input)
+        builder.setView(ll)
+        builder.setPositiveButton(
+            "OK"
+        ) { dialog, _ ->
+            if (input.text.toString() == kioskPassword) {
+                dialog.dismiss()
+                onBackPressed()
+            } else {
+                utils.showAlertBox("Wrong Password!", "Please contact administrator")
+            }
+        }
+        builder.setNegativeButton(
+            "Cancel"
+        ) { dialog, which -> dialog.cancel() }
+        builder.show()
     }
 
-    override fun onPause() {
-        super.onPause()
-        barcodeView.pause()
-    }
-
-    override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
-        return barcodeView.onKeyDown(keyCode, event) || super.onKeyDown(keyCode, event)
+    private fun setupBarcode() {
+        if (!barcodeInitialized) {
+            barcodeView = findViewById(R.id.zxing_barcode_scanner)
+            val formats: Collection<BarcodeFormat> =
+                Arrays.asList(BarcodeFormat.QR_CODE, BarcodeFormat.CODE_39)
+            barcodeView.barcodeView.decoderFactory = DefaultDecoderFactory(formats)
+            barcodeView.initializeFromIntent(intent)
+            barcodeView.decodeContinuous(callback)
+            barcodeView.cameraSettings.requestedCameraId = if (cameraFacing) 1 else 0
+            barcodeInitialized = true
+        }
     }
 
     private fun runAndPrint(registrationCode: String) {
@@ -173,7 +204,6 @@ class ContinuousCapture : Activity() {
             registrationDomain,
             utils.CHECK_IN_API + "&qrcode=$registrationCode&terminal=$terminalID&checkpoint=$checkpointCode&mode=$checkInModeString",
             { response ->
-
                 try {
                     val data = response.body()!!.string()
                     val jsonResponse = JSONObject(data)
@@ -188,9 +218,9 @@ class ContinuousCapture : Activity() {
                     val message =
                         if (jsonResponse.has("message")) jsonResponse.getString("message") else ""
                     if (status == "1") {
-                        processPrintSuccess(title, heading + "\n" + message)
+                        processPrintSuccess(title, heading + "\n\n" + message)
                     } else {
-                        processPrintFail(title, heading + "\n" + message+"\n"+error)
+                        processPrintFail(title, heading + "\n\n" + message + "\n" + error)
                     }
                 } catch (e: Exception) {
                     processPrintFail("FAIL", "Unable to get data")
@@ -232,7 +262,7 @@ class ContinuousCapture : Activity() {
     }
 
     private fun processPrintFail(sTitle: String, message: String) {
-        utils.showAlert("Print Badge Failed: $message", true)
+        utils.showAlert("Check In Failed: $message", true)
         runOnUiThread {
             if (showProgress) {
                 progressDialog.dismiss()
@@ -244,7 +274,7 @@ class ContinuousCapture : Activity() {
 
     private fun getValue() {
         val defRegistrationDomain = "registration.oilandgas-asia.com"
-       val defCameraFacing = false // true means it is Front Camera
+        val defCameraFacing = false // true means it is Front Camera
         val sharedPref: SharedPreferences =
             getSharedPreferences(utils.SHARED_PREFERENCE_NAME, MODE_PRIVATE)
         checkInMode = sharedPref.getBoolean("checkInMode", true)

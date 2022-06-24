@@ -1,7 +1,9 @@
 package com.ml.pa.checkinterminal
 
+import android.Manifest
 import android.content.Intent
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
 import android.graphics.Typeface
 import android.graphics.drawable.AnimationDrawable
 import android.os.Bundle
@@ -12,7 +14,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import okhttp3.Response
 import org.json.JSONObject
-
 
 class MainActivity : AppCompatActivity() {
     private val utils = Utils(this)
@@ -43,15 +44,21 @@ class MainActivity : AppCompatActivity() {
         animationDrawable.start()
 
         logoView = findViewById(R.id.logo_view)
-
         btnScan = findViewById(R.id.btnScan)
-        btnScan.setOnClickListener { startScanner() }
         btnScan.background.alpha = 180
+        btnScan.setOnClickListener {
+            if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(
+                    arrayOf(Manifest.permission.CAMERA),
+                    utils.CAMERA_PERMISSION_CODE
+                )
+            } else {
+                startScanner()
+            }
+        }
 
         btnSetting = findViewById(R.id.btnSetting)
-        btnSetting.setOnClickListener {
-            goToSetting()
-        }
+        btnSetting.setOnClickListener { goToSetting() }
 
         val extra = intent.extras
         if (extra != null) {
@@ -59,6 +66,24 @@ class MainActivity : AppCompatActivity() {
             if (updateValue == 1) hasGetData = false
         }
         getValue()
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String?>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == utils.CAMERA_PERMISSION_CODE) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                startScanner()
+            } else {
+                utils.showAlertBox(
+                    "Error",
+                    "Please allow camera permission in setting for scanning!"
+                )
+            }
+        }
     }
 
     override fun onResume() {
@@ -73,7 +98,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun startScanner() {
         if (checkpointCode == "") {
-            utils.showAlertBox("Error", "Please setup your printer")
+            utils.showAlertBox("Error", "Please key in check point code")
         } else {
             runOnUiThread {
                 val intent = Intent(this, ContinuousCapture::class.java)
@@ -90,7 +115,7 @@ class MainActivity : AppCompatActivity() {
             LinearLayout.LayoutParams.MATCH_PARENT,
             LinearLayout.LayoutParams.WRAP_CONTENT
         )
-        llParam.setMargins(20,20,20,0)
+        llParam.setMargins(20, 20, 20, 0)
 
         val tvText = TextView(this)
         tvText.text = "Please Enter Password"
@@ -103,7 +128,7 @@ class MainActivity : AppCompatActivity() {
             LinearLayout.LayoutParams.MATCH_PARENT,
             LinearLayout.LayoutParams.WRAP_CONTENT
         )
-        llParam2.setMargins(20,10,20,0)
+        llParam2.setMargins(20, 10, 20, 0)
         input.layoutParams = llParam2
         input.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
 
@@ -125,7 +150,7 @@ class MainActivity : AppCompatActivity() {
         }
         builder.setNegativeButton(
             "Cancel"
-        ) { dialog, which -> dialog.cancel() }
+        ) { dialog, _ -> dialog.cancel() }
         builder.show()
     }
 
@@ -141,7 +166,7 @@ class MainActivity : AppCompatActivity() {
         checkInMode = sharedPref.getBoolean("checkInMode", true)
         cameraFacing = sharedPref.getBoolean("cameraFacing", false)
         logo = sharedPref.getString("logo", utils.DEFAULT_LOGO) ?: utils.DEFAULT_LOGO
-        utils.setLogo(logo,logoView)
+        utils.setLogo(logo, logoView)
 
         if (!hasGetData) {
             if (registrationDomain == "") {
@@ -174,7 +199,7 @@ class MainActivity : AppCompatActivity() {
                     if (jsonData.has("kiosk_password")) jsonData.getString("kiosk_password") else utils.DEFAULT_KIOSK_PASSWORD
                 logo =
                     if (jsonData.has("logo")) jsonData.getString("logo") else utils.DEFAULT_LOGO
-                utils.setLogo(logo,logoView)
+                utils.setLogo(logo, logoView)
                 val sharedPref: SharedPreferences =
                     getSharedPreferences(utils.SHARED_PREFERENCE_NAME, MODE_PRIVATE)
                 val editor: SharedPreferences.Editor = sharedPref.edit()
