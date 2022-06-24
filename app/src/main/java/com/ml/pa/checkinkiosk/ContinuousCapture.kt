@@ -255,7 +255,7 @@ class ContinuousCapture : Activity() {
     }
 
     private fun getValue() {
-        val defRegistrationDomain = "registration.frontdesk.my"
+        val defRegistrationDomain = "registration.oilandgas-asia.com"
        val defCameraFacing = false // true means it is Front Camera
         val sharedPref: SharedPreferences =
             getSharedPreferences(utils.SHARED_PREFERENCE_NAME, MODE_PRIVATE)
