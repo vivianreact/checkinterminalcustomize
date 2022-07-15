@@ -1,4 +1,4 @@
-package com.ml.pa.checkinterminal
+package com.ml.pa.checkinterminalcustomize
 
 import android.Manifest
 import android.app.Activity
@@ -6,6 +6,7 @@ import android.app.AlertDialog
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
+import android.content.res.Configuration
 import android.graphics.Typeface
 import android.os.Bundle
 import android.os.Handler
@@ -13,6 +14,7 @@ import android.os.Looper
 import android.text.InputType
 import android.view.*
 import android.widget.*
+import androidx.constraintlayout.widget.ConstraintLayout
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.client.android.BeepManager
 import com.journeyapps.barcodescanner.*
@@ -26,8 +28,8 @@ class ContinuousCapture : Activity() {
     private lateinit var beepManager: BeepManager
     private lateinit var progress: ProgressBar
     private lateinit var viewfinderView: ViewfinderView
-    private lateinit var logoView: ImageView
     private lateinit var btnHome: Button
+    private lateinit var constraintLayout: ConstraintLayout
 
     private var lastText: String = ""
     private var registrationDomain = ""
@@ -39,14 +41,16 @@ class ContinuousCapture : Activity() {
     private var isScanning = false
     private var showProgress = false
     private var barcodeInitialized = false
+    private var scanLandscape = ""
+    private var scanPortrait = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.continuous_scan)
         viewfinderView = findViewById(R.id.zxing_viewfinder_view)
+        constraintLayout = findViewById(R.id.root_layout)
         progress = ProgressBar(this)
         beepManager = BeepManager(this)
-        logoView = findViewById(R.id.logo_view)
         btnHome = findViewById(R.id.btn_home)
         btnHome.setOnClickListener { setupHomeButton() }
         getValue()
@@ -108,7 +112,7 @@ class ContinuousCapture : Activity() {
         val ll = LinearLayout(this)
         ll.orientation = LinearLayout.VERTICAL
         ll.gravity = Gravity.CENTER
-        var llParam = LinearLayout.LayoutParams(
+        val llParam = LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.WRAP_CONTENT,
             LinearLayout.LayoutParams.WRAP_CONTENT
         )
@@ -273,7 +277,7 @@ class ContinuousCapture : Activity() {
     }
 
     private fun getValue() {
-        val defRegistrationDomain = "registration.oilandgas-asia.com"
+        val defRegistrationDomain = "expo.inspiresmexpo.com"
         val defCameraFacing = false // true means it is Front Camera
         val sharedPref: SharedPreferences =
             getSharedPreferences(utils.SHARED_PREFERENCE_NAME, MODE_PRIVATE)
@@ -286,8 +290,13 @@ class ContinuousCapture : Activity() {
         registrationDomain = sharedPref.getString("registrationDomain", defRegistrationDomain)
             ?: defRegistrationDomain
         cameraFacing = sharedPref.getBoolean("cameraFacing", defCameraFacing)
-        val logo = sharedPref.getString("logo", utils.DEFAULT_LOGO) ?: utils.DEFAULT_LOGO
-        utils.setLogo(logo, logoView)
-
+        scanPortrait = sharedPref.getString("scanPortrait", "") ?: ""
+        scanLandscape = sharedPref.getString("scanLandscape", "") ?: ""
+        val orientation: Int = resources.configuration.orientation
+        if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            utils.setBackgroundLayout(scanLandscape, constraintLayout)
+        } else {
+            utils.setBackgroundLayout(scanPortrait, constraintLayout)
+        }
     }
 }

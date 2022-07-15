@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.ml.pa.checkinterminal">
+    package="com.ml.pa.checkinterminalcustomize">
 
     <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
     <uses-permission
@@ -18,18 +18,18 @@
         android:label="Check In Terminal"
         android:requestLegacyExternalStorage="true"
         android:roundIcon="@mipmap/ic_launcher"
-        android:theme="@style/Theme.Checkinterminal"
+        android:theme="@style/Theme.checkinterminalcustomize"
         android:usesCleartextTraffic="true">
         <activity
-            android:name="com.ml.pa.checkinterminal.ContinuousCapture"
+            android:name="com.ml.pa.checkinterminalcustomize.ContinuousCapture"
             android:configChanges="keyboardHidden|orientation|screenSize" />
         <activity
-            android:name="com.ml.pa.checkinterminal.SettingActivity"
+            android:name="com.ml.pa.checkinterminalcustomize.SettingActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:exported="false"
             android:label="@string/title_activity_setting" />
          <activity
-            android:name="com.ml.pa.checkinterminal.MainActivity"
+            android:name="com.ml.pa.checkinterminalcustomize.MainActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:exported="true"
             android:theme="@style/Theme.AppCompat.DayNight.NoActionBar">

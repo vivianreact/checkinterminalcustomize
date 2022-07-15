@@ -5,39 +5,16 @@
     android:id="@+id/root_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/gradient_background"
+    android:background="@color/black"
     android:gravity="center"
     android:orientation="vertical"
-    tools:context=".MainActivity">
+    tools:context="com.ml.pa.checkinterminalcustomize.MainActivity">
 
-    <LinearLayout
+    <Button
+        android:id="@+id/btnScan"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <ImageView
-            android:id="@+id/logo_view"
-            android:layout_width="300dp"
-            android:layout_height="200dp"
-            android:contentDescription="logo" />
-
-        <Button
-            android:id="@+id/btnScan"
-            android:layout_width="300dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="40dp"
-            android:layout_marginBottom="50dp"
-            android:background="@drawable/rounded_button"
-            android:paddingVertical="12dp"
-            android:text="Scan"
-            android:textColor="@color/dark_gray"
-            android:textSize="20sp" />
-    </LinearLayout>
+        android:layout_height="match_parent"
+        android:background="@android:color/transparent" />
 
     <Button
         android:id="@+id/btnSetting"
@@ -47,6 +24,7 @@
         android:backgroundTint="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
 
 

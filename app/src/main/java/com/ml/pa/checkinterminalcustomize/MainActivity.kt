@@ -1,12 +1,15 @@
-package com.ml.pa.checkinterminal
+package com.ml.pa.checkinterminalcustomize
 
 import android.Manifest
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
+import android.content.res.Configuration
 import android.graphics.Typeface
 import android.graphics.drawable.AnimationDrawable
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.InputType
 import android.view.Gravity
 import android.widget.*
@@ -14,39 +17,40 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import okhttp3.Response
 import org.json.JSONObject
+import java.net.InetAddress
+import java.net.UnknownHostException
+import kotlin.concurrent.thread
 
 class MainActivity : AppCompatActivity() {
-    private val utils = Utils(this)
-
     private lateinit var btnScan: Button
     private lateinit var btnSetting: Button
     private lateinit var constraintLayout: ConstraintLayout
-    private lateinit var logoView: ImageView
 
+    private val utils = Utils(this)
+    private var hasGetData = false
     private var registrationDomain = ""
     private var checkpointCode = ""
     private var terminalID = ""
     private var checkInMode: Boolean = true
-    private var cameraFacing: Boolean = false
-
     private var kioskPassword = utils.DEFAULT_KIOSK_PASSWORD
-    private var logo = utils.DEFAULT_LOGO
-
-    private var hasGetData = false
+    private var landingLandscape = ""
+    private var landingPortrait = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
         constraintLayout = findViewById(R.id.root_layout)
-        val animationDrawable = constraintLayout.background as AnimationDrawable
-        animationDrawable.setExitFadeDuration(4000)
-        animationDrawable.start()
-
-        logoView = findViewById(R.id.logo_view)
         btnScan = findViewById(R.id.btnScan)
         btnScan.background.alpha = 180
         btnScan.setOnClickListener {
+            utils.showAlertBox(
+                "Loading",
+                "Checking Internet Connection", {}, { dialog ->
+                    val handler = Handler(Looper.getMainLooper())
+                    handler.postDelayed({
+                        dialog.dismiss()
+                    }, 2000)
+                })
             if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
                 requestPermissions(
                     arrayOf(Manifest.permission.CAMERA),
@@ -101,8 +105,35 @@ class MainActivity : AppCompatActivity() {
             utils.showAlertBox("Error", "Please key in check point code")
         } else {
             runOnUiThread {
-                val intent = Intent(this, ContinuousCapture::class.java)
-                startActivity(intent)
+                thread {
+                    var reachable = false
+                    try {
+                        if (InetAddress.getByName(registrationDomain).isReachable(5000)) {
+                            reachable = true
+                        }
+                    } catch (e: UnknownHostException) {
+                        utils.showAlertBox(
+                            "Print Badge Fail",
+                            "Device IP Address is unreachable [B02]"
+                        )
+                    } catch (e: Exception) {
+                        utils.showAlertBox(
+                            "Print Badge Fail",
+                            "Device IP Address is unreachable [B01]"
+                        )
+                    }
+                    runOnUiThread {
+                        if (reachable) {
+                            val intent = Intent(this, ContinuousCapture::class.java)
+                            startActivity(intent)
+                        } else {
+                            utils.showAlertBox(
+                                "Print Badge Fail",
+                                "Device IP Address is unreachable [B03]"
+                            )
+                        }
+                    }
+                }
             }
         }
     }
@@ -164,9 +195,14 @@ class MainActivity : AppCompatActivity() {
                 ?: utils.DEFAULT_KIOSK_PASSWORD
         terminalID = sharedPref.getString("terminalID", "") ?: ""
         checkInMode = sharedPref.getBoolean("checkInMode", true)
-        cameraFacing = sharedPref.getBoolean("cameraFacing", false)
-        logo = sharedPref.getString("logo", utils.DEFAULT_LOGO) ?: utils.DEFAULT_LOGO
-        utils.setLogo(logo, logoView)
+        landingPortrait = sharedPref.getString("landingPortrait", "") ?: ""
+        landingLandscape = sharedPref.getString("landingLandscape", "") ?: ""
+        val orientation: Int = resources.configuration.orientation
+        if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            utils.setBackgroundLayout(landingLandscape, constraintLayout)
+        } else {
+            utils.setBackgroundLayout(landingPortrait, constraintLayout)
+        }
 
         if (!hasGetData) {
             if (registrationDomain == "") {
@@ -185,6 +221,16 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        val orientation: Int = resources.configuration.orientation
+        if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            utils.setBackgroundLayout(landingLandscape, constraintLayout)
+        } else {
+            utils.setBackgroundLayout(landingPortrait, constraintLayout)
+        }
+    }
+
     private fun getServerData(response: Response) {
         try {
             val data = response.body()!!.string()
@@ -197,14 +243,28 @@ class MainActivity : AppCompatActivity() {
                 val jsonData = jsonResponse.getJSONObject("data")
                 kioskPassword =
                     if (jsonData.has("kiosk_password")) jsonData.getString("kiosk_password") else utils.DEFAULT_KIOSK_PASSWORD
-                logo =
-                    if (jsonData.has("logo")) jsonData.getString("logo") else utils.DEFAULT_LOGO
-                utils.setLogo(logo, logoView)
+                landingPortrait =
+                    if (jsonData.has("landing_portrait")) jsonData.getString("landing_portrait") else ""
+                landingLandscape =
+                    if (jsonData.has("landing_landscape")) jsonData.getString("landing_landscape") else ""
+                val scanPortrait =
+                    if (jsonData.has("scan_portrait")) jsonData.getString("scan_portrait") else ""
+                val scanLandscape =
+                    if (jsonData.has("scan_landscape")) jsonData.getString("scan_landscape") else ""
+                val orientation: Int = resources.configuration.orientation
+                if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                    utils.setBackgroundLayout(landingLandscape, constraintLayout)
+                } else {
+                    utils.setBackgroundLayout(landingPortrait, constraintLayout)
+                }
                 val sharedPref: SharedPreferences =
                     getSharedPreferences(utils.SHARED_PREFERENCE_NAME, MODE_PRIVATE)
                 val editor: SharedPreferences.Editor = sharedPref.edit()
                 editor.putString("kioskPassword", kioskPassword)
-                editor.putString("logo", logo)
+                editor.putString("landingPortrait", landingPortrait)
+                editor.putString("landingLandscape", landingLandscape)
+                editor.putString("scanPortrait", scanPortrait)
+                editor.putString("scanLandscape", scanLandscape)
                 editor.apply()
             } else {
                 utils.showAlert(message)

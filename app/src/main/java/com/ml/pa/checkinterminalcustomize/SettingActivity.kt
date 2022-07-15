@@ -1,4 +1,4 @@
-package com.ml.pa.checkinterminal
+package com.ml.pa.checkinterminalcustomize
 
 import android.annotation.SuppressLint
 import android.content.Intent
@@ -6,6 +6,7 @@ import android.content.SharedPreferences
 import android.os.Bundle
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import com.ml.pa.checkinterminalcustomize.R
 
 @SuppressLint("UseSwitchCompatOrMaterialCode")
 class SettingActivity : AppCompatActivity() {
@@ -44,7 +45,7 @@ class SettingActivity : AppCompatActivity() {
 
     private fun getValue() {
         //default data put here
-         var defRegistrationDomain = "registration.oilandgas-asia.com"
+         var defRegistrationDomain = "expo.inspiresmexpo.com"
 //         var defRegistrationDomain = "registration.frontdesk.my"
          var defCheckpointCode = "6QLMFC" //default data put here
 //         var defCheckpointCode = "AU2ZSS" //default data put here

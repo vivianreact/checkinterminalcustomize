@@ -1,4 +1,4 @@
-package com.ml.pa.checkinterminal
+package com.ml.pa.checkinterminalcustomize
 
 import org.junit.Test
 

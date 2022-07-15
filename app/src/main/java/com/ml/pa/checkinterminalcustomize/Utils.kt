@@ -1,4 +1,4 @@
-package com.ml.pa.checkinterminal
+package com.ml.pa.checkinterminalcustomize
 
 import android.R
 import android.app.Activity
@@ -7,6 +7,8 @@ import android.content.Context.CONNECTIVITY_SERVICE
 import android.content.DialogInterface
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.util.Log
@@ -16,6 +18,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.constraintlayout.widget.ConstraintLayout
 import okhttp3.*
 import java.io.IOException
 import java.net.HttpURLConnection
@@ -26,7 +29,7 @@ import kotlin.concurrent.thread
 
 
 class Utils(private val context: Context) {
-    val SHARED_PREFERENCE_NAME = "checkinterminal"
+    val SHARED_PREFERENCE_NAME = "checkinterminalcustomize"
     val DEFAULT_KIOSK_PASSWORD = "frontdesk"
     val SETUP_URL =
         "index.php?option=com_platform&view=api&task=scan_print_badge_setup"
@@ -35,16 +38,6 @@ class Utils(private val context: Context) {
     val DEFAULT_LOGO = "@drawable/applogo"
     val RESCAN_TIME: Long = 1 * 1000
     val CAMERA_PERMISSION_CODE = 100
-
-    fun setLogo(logo: String, logoView: ImageView) {
-        if (logo != DEFAULT_LOGO && logo != "") {
-            getBitmapFromURL(logo) { mIcon11 ->
-                (context as Activity).runOnUiThread {
-                    logoView.setImageBitmap(mIcon11)
-                }
-            }
-        }
-    }
 
     fun getBitmapFromURL(src: String?, callback: (Bitmap) -> Unit) {
         thread {
@@ -186,5 +179,17 @@ class Utils(private val context: Context) {
 
     fun getTextFieldInt(textField: EditText): Int {
         return textField.text.toString().trim().toInt()
+    }
+
+
+    fun setBackgroundLayout(landingLandscape: String, constraintLayout: ConstraintLayout) {
+        if (landingLandscape != "") {
+            getBitmapFromURL(landingLandscape) { mIcon11 ->
+                (context as Activity).runOnUiThread {
+                    val dr: Drawable = BitmapDrawable(context.getResources(), mIcon11);
+                    constraintLayout.background = dr
+                }
+            }
+        }
     }
 }
