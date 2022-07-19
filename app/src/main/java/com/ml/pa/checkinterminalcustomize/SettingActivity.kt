@@ -44,7 +44,6 @@ class SettingActivity : AppCompatActivity() {
         logoView = findViewById(R.id.logo_view)
         btnOK = findViewById(R.id.alert_ok)
         btnOK.setOnClickListener { customAlertDialog.visibility = View.GONE}
-
         btnSave = findViewById(R.id.btnSave)
         btnSave.setOnClickListener { setValue() }
     }

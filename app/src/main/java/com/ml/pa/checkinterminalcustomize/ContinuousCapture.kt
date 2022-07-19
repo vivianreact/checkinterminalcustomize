@@ -57,14 +57,13 @@ class ContinuousCapture : Activity() {
         constraintLayout = findViewById(R.id.root_layout)
         progress = ProgressBar(this)
         beepManager = BeepManager(this)
-        logoView = findViewById(R.id.logo_view)
+
         alertTitle = findViewById(R.id.alert_title)
         alertContent = findViewById(R.id.alert_content)
         customAlertDialog = findViewById(R.id.custom_alert_dialog)
         customAlertDialog.visibility = View.GONE
         btnOK = findViewById(R.id.alert_ok)
-        btnOK.setOnClickListener { customAlertDialog.visibility = View.GONE }
-
+        logoView = findViewById(R.id.logo_view)
         btnHome = findViewById(R.id.btn_home)
         btnHome.setOnClickListener { setupHomeButton() }
         getValue()

@@ -182,6 +182,7 @@ class Utils(private val context: Context) {
             }
         }
     }
+
     fun setBackgroundLayout(landingLandscape: String, constraintLayout: ConstraintLayout) {
         if (landingLandscape != "") {
             getBitmapFromURL(landingLandscape) { mIcon11 ->
