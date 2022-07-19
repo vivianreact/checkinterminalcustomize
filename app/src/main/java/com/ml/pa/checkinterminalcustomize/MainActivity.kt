@@ -52,7 +52,7 @@ class MainActivity : AppCompatActivity() {
         btnScan = findViewById(R.id.btnScan)
         btnScan.background.alpha = 180
         btnScan.setOnClickListener {
-            utils.showAlertBox(customAlertDialog,btnOK,alertTitle, alertContent,
+            utils.showAlertBox(customAlertDialog, btnOK, alertTitle, alertContent,
                 "Loading",
                 "Checking Internet Connection", {}, { dialog ->
                     val handler = Handler(Looper.getMainLooper())
@@ -72,7 +72,7 @@ class MainActivity : AppCompatActivity() {
         customAlertDialog = findViewById(R.id.custom_alert_dialog)
         customAlertDialog.visibility = View.GONE
         btnOK = findViewById(R.id.alert_ok)
-        btnOK.setOnClickListener { customAlertDialog.visibility = View.GONE}
+        btnOK.setOnClickListener { customAlertDialog.visibility = View.GONE }
         btnSetting = findViewById(R.id.btnSetting)
         btnSetting.setOnClickListener { goToSetting() }
 
@@ -94,7 +94,8 @@ class MainActivity : AppCompatActivity() {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 startScanner()
             } else {
-                utils.showAlertBox(customAlertDialog,btnOK,alertTitle, alertContent,
+                utils.showAlertBox(
+                    customAlertDialog, btnOK, alertTitle, alertContent,
                     "Error",
                     "Please allow camera permission in setting for scanning!"
                 )
@@ -114,7 +115,14 @@ class MainActivity : AppCompatActivity() {
 
     private fun startScanner() {
         if (checkpointCode == "") {
-            utils.showAlertBox(customAlertDialog,btnOK,alertTitle, alertContent,"Error", "Please key in check point code")
+            utils.showAlertBox(
+                customAlertDialog,
+                btnOK,
+                alertTitle,
+                alertContent,
+                "Error",
+                "Please key in check point code"
+            )
         } else {
             runOnUiThread {
                 thread {
@@ -124,12 +132,14 @@ class MainActivity : AppCompatActivity() {
                             reachable = true
                         }
                     } catch (e: UnknownHostException) {
-                        utils.showAlertBox(customAlertDialog,btnOK,alertTitle, alertContent,
+                        utils.showAlertBox(
+                            customAlertDialog, btnOK, alertTitle, alertContent,
                             "Print Badge Fail",
                             "Device IP Address is unreachable [B02]"
                         )
                     } catch (e: Exception) {
-                        utils.showAlertBox(customAlertDialog,btnOK,alertTitle, alertContent,
+                        utils.showAlertBox(
+                            customAlertDialog, btnOK, alertTitle, alertContent,
                             "Print Badge Fail",
                             "Device IP Address is unreachable [B01]"
                         )
@@ -139,7 +149,8 @@ class MainActivity : AppCompatActivity() {
                             val intent = Intent(this, ContinuousCapture::class.java)
                             startActivity(intent)
                         } else {
-                            utils.showAlertBox(customAlertDialog,btnOK,alertTitle, alertContent,
+                            utils.showAlertBox(
+                                customAlertDialog, btnOK, alertTitle, alertContent,
                                 "Print Badge Fail",
                                 "Device IP Address is unreachable [B03]"
                             )
@@ -188,7 +199,14 @@ class MainActivity : AppCompatActivity() {
                 val intent = Intent(this, SettingActivity::class.java)
                 startActivity(intent)
             } else {
-                utils.showAlertBox(customAlertDialog,btnOK,alertTitle, alertContent,"Wrong Password!", "Please contact administrator")
+                utils.showAlertBox(
+                    customAlertDialog,
+                    btnOK,
+                    alertTitle,
+                    alertContent,
+                    "Wrong Password!",
+                    "Please contact administrator"
+                )
             }
         }
         builder.setNegativeButton(
@@ -229,7 +247,14 @@ class MainActivity : AppCompatActivity() {
                     getServerData(response)
                     hasGetData = true
                 }, { error ->
-                    utils.showAlertBox(customAlertDialog,btnOK,alertTitle, alertContent,"Error", error)
+                    utils.showAlertBox(
+                        customAlertDialog,
+                        btnOK,
+                        alertTitle,
+                        alertContent,
+                        "Error",
+                        error
+                    )
                 }
             )
         }

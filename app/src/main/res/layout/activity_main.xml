@@ -29,6 +29,7 @@
         android:id="@+id/custom_alert_dialog"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
+        android:visibility="gone"
         app:cardCornerRadius="20dp"
         app:cardElevation="5dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -70,8 +71,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="30dp"
                 android:gravity="center"
-                android:textSize="16sp"
-                android:textAlignment="center" />
+                android:textAlignment="center"
+                android:textSize="16sp" />
 
             <Button
                 android:id="@+id/alert_ok"
@@ -85,7 +86,4 @@
                 android:textSize="19sp" />
         </LinearLayout>
     </androidx.cardview.widget.CardView>
-
 </androidx.constraintlayout.widget.ConstraintLayout>
-
-

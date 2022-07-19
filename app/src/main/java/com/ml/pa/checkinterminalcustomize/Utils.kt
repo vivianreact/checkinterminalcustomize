@@ -1,6 +1,5 @@
 package com.ml.pa.checkinterminalcustomize
 
-
 import android.view.View
 import android.widget.*
 import androidx.cardview.widget.CardView

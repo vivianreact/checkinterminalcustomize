@@ -1,6 +1,5 @@
 package com.ml.pa.checkinterminalcustomize
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
@@ -8,9 +7,7 @@ import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
-import com.ml.pa.checkinterminalcustomize.R
 
-@SuppressLint("UseSwitchCompatOrMaterialCode")
 class SettingActivity : AppCompatActivity() {
     private val utils = Utils(this)
 

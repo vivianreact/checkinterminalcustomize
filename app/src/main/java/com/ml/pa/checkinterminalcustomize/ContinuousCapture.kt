@@ -63,7 +63,7 @@ class ContinuousCapture : Activity() {
         customAlertDialog = findViewById(R.id.custom_alert_dialog)
         customAlertDialog.visibility = View.GONE
         btnOK = findViewById(R.id.alert_ok)
-        btnOK.setOnClickListener { customAlertDialog.visibility = View.GONE}
+        btnOK.setOnClickListener { customAlertDialog.visibility = View.GONE }
 
         btnHome = findViewById(R.id.btn_home)
         btnHome.setOnClickListener { setupHomeButton() }
@@ -194,7 +194,14 @@ class ContinuousCapture : Activity() {
                 dialog.dismiss()
                 onBackPressed()
             } else {
-                utils.showAlertBox(customAlertDialog,btnOK,alertTitle, alertContent,"Wrong Password!", "Please contact administrator")
+                utils.showAlertBox(
+                    customAlertDialog,
+                    btnOK,
+                    alertTitle,
+                    alertContent,
+                    "Wrong Password!",
+                    "Please contact administrator"
+                )
             }
         }
         builder.setNegativeButton(
@@ -266,7 +273,7 @@ class ContinuousCapture : Activity() {
                 progressDialog.dismiss()
                 showProgress = false
             }
-            utils.showAlertBox(customAlertDialog,btnOK,alertTitle, alertContent,
+            utils.showAlertBox(customAlertDialog, btnOK, alertTitle, alertContent,
                 sTitle,
                 message, {}, { dialog ->
                     val handler = Handler(Looper.getMainLooper())
@@ -286,7 +293,15 @@ class ContinuousCapture : Activity() {
                 progressDialog.dismiss()
                 showProgress = false
             }
-            utils.showAlertBox(customAlertDialog,btnOK,alertTitle, alertContent,sTitle, message, { isScanning = false }, {})
+            utils.showAlertBox(
+                customAlertDialog,
+                btnOK,
+                alertTitle,
+                alertContent,
+                sTitle,
+                message,
+                { isScanning = false },
+                {})
         }
     }
 
