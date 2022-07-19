@@ -57,7 +57,6 @@ class ContinuousCapture : Activity() {
         constraintLayout = findViewById(R.id.root_layout)
         progress = ProgressBar(this)
         beepManager = BeepManager(this)
-
         alertTitle = findViewById(R.id.alert_title)
         alertContent = findViewById(R.id.alert_content)
         customAlertDialog = findViewById(R.id.custom_alert_dialog)

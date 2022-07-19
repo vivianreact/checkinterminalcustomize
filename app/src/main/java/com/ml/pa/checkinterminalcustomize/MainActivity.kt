@@ -45,7 +45,15 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
+        constraintLayout = findViewById(R.id.root_layout)
+        alertTitle = findViewById(R.id.alert_title)
+        alertContent = findViewById(R.id.alert_content)
+        customAlertDialog = findViewById(R.id.custom_alert_dialog)
+        customAlertDialog.visibility = View.GONE
+        btnOK = findViewById(R.id.alert_ok)
+        logoView = findViewById(R.id.logo_view)
+        btnSetting = findViewById(R.id.btnSetting)
+        btnSetting.setOnClickListener { goToSetting() }
         btnScan = findViewById(R.id.btnScan)
         btnScan.background.alpha = 180
         btnScan.setOnClickListener {
@@ -66,16 +74,6 @@ class MainActivity : AppCompatActivity() {
                 startScanner()
             }
         }
-        constraintLayout = findViewById(R.id.root_layout)
-        alertTitle = findViewById(R.id.alert_title)
-        alertContent = findViewById(R.id.alert_content)
-        customAlertDialog = findViewById(R.id.custom_alert_dialog)
-        customAlertDialog.visibility = View.GONE
-        btnOK = findViewById(R.id.alert_ok)
-        logoView = findViewById(R.id.logo_view)
-        btnSetting = findViewById(R.id.btnSetting)
-        btnSetting.setOnClickListener { goToSetting() }
-
         val extra = intent.extras
         if (extra != null) {
             val updateValue = extra.getInt("updateValue")
