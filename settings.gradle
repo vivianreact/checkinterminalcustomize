@@ -12,5 +12,5 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
-rootProject.name = "Check In Terminal"
+rootProject.name = "Check In Terminal Customize"
 include ':app'
