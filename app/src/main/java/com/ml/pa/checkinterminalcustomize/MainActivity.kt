@@ -6,14 +6,15 @@ import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.graphics.Typeface
-import android.graphics.drawable.AnimationDrawable
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.text.InputType
 import android.view.Gravity
+import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
 import okhttp3.Response
 import org.json.JSONObject
@@ -25,6 +26,11 @@ class MainActivity : AppCompatActivity() {
     private lateinit var btnScan: Button
     private lateinit var btnSetting: Button
     private lateinit var constraintLayout: ConstraintLayout
+    private lateinit var logoView: ImageView
+    private lateinit var btnOK: Button
+    private lateinit var customAlertDialog: CardView
+    private lateinit var alertTitle: TextView
+    private lateinit var alertContent: TextView
 
     private val utils = Utils(this)
     private var hasGetData = false
@@ -40,15 +46,18 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         constraintLayout = findViewById(R.id.root_layout)
+        logoView = findViewById(R.id.logo_view)
+        alertTitle = findViewById(R.id.alert_title)
+        alertContent = findViewById(R.id.alert_content)
         btnScan = findViewById(R.id.btnScan)
         btnScan.background.alpha = 180
         btnScan.setOnClickListener {
-            utils.showAlertBox(
+            utils.showAlertBox(customAlertDialog,btnOK,alertTitle, alertContent,
                 "Loading",
                 "Checking Internet Connection", {}, { dialog ->
                     val handler = Handler(Looper.getMainLooper())
                     handler.postDelayed({
-                        dialog.dismiss()
+                        dialog.visibility = View.GONE
                     }, 2000)
                 })
             if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
@@ -60,7 +69,10 @@ class MainActivity : AppCompatActivity() {
                 startScanner()
             }
         }
-
+        customAlertDialog = findViewById(R.id.custom_alert_dialog)
+        customAlertDialog.visibility = View.GONE
+        btnOK = findViewById(R.id.alert_ok)
+        btnOK.setOnClickListener { customAlertDialog.visibility = View.GONE}
         btnSetting = findViewById(R.id.btnSetting)
         btnSetting.setOnClickListener { goToSetting() }
 
@@ -82,7 +94,7 @@ class MainActivity : AppCompatActivity() {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 startScanner()
             } else {
-                utils.showAlertBox(
+                utils.showAlertBox(customAlertDialog,btnOK,alertTitle, alertContent,
                     "Error",
                     "Please allow camera permission in setting for scanning!"
                 )
@@ -102,7 +114,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun startScanner() {
         if (checkpointCode == "") {
-            utils.showAlertBox("Error", "Please key in check point code")
+            utils.showAlertBox(customAlertDialog,btnOK,alertTitle, alertContent,"Error", "Please key in check point code")
         } else {
             runOnUiThread {
                 thread {
@@ -112,12 +124,12 @@ class MainActivity : AppCompatActivity() {
                             reachable = true
                         }
                     } catch (e: UnknownHostException) {
-                        utils.showAlertBox(
+                        utils.showAlertBox(customAlertDialog,btnOK,alertTitle, alertContent,
                             "Print Badge Fail",
                             "Device IP Address is unreachable [B02]"
                         )
                     } catch (e: Exception) {
-                        utils.showAlertBox(
+                        utils.showAlertBox(customAlertDialog,btnOK,alertTitle, alertContent,
                             "Print Badge Fail",
                             "Device IP Address is unreachable [B01]"
                         )
@@ -127,7 +139,7 @@ class MainActivity : AppCompatActivity() {
                             val intent = Intent(this, ContinuousCapture::class.java)
                             startActivity(intent)
                         } else {
-                            utils.showAlertBox(
+                            utils.showAlertBox(customAlertDialog,btnOK,alertTitle, alertContent,
                                 "Print Badge Fail",
                                 "Device IP Address is unreachable [B03]"
                             )
@@ -176,7 +188,7 @@ class MainActivity : AppCompatActivity() {
                 val intent = Intent(this, SettingActivity::class.java)
                 startActivity(intent)
             } else {
-                utils.showAlertBox("Wrong Password!", "Please contact administrator")
+                utils.showAlertBox(customAlertDialog,btnOK,alertTitle, alertContent,"Wrong Password!", "Please contact administrator")
             }
         }
         builder.setNegativeButton(
@@ -193,6 +205,8 @@ class MainActivity : AppCompatActivity() {
         kioskPassword =
             sharedPref.getString("kioskPassword", utils.DEFAULT_KIOSK_PASSWORD)
                 ?: utils.DEFAULT_KIOSK_PASSWORD
+        val logo = sharedPref.getString("logo", utils.DEFAULT_LOGO) ?: utils.DEFAULT_LOGO
+        utils.setLogo(logo, logoView)
         terminalID = sharedPref.getString("terminalID", "") ?: ""
         checkInMode = sharedPref.getBoolean("checkInMode", true)
         landingPortrait = sharedPref.getString("landingPortrait", "") ?: ""
@@ -215,7 +229,7 @@ class MainActivity : AppCompatActivity() {
                     getServerData(response)
                     hasGetData = true
                 }, { error ->
-                    utils.showAlertBox("Error", error)
+                    utils.showAlertBox(customAlertDialog,btnOK,alertTitle, alertContent,"Error", error)
                 }
             )
         }
@@ -243,6 +257,9 @@ class MainActivity : AppCompatActivity() {
                 val jsonData = jsonResponse.getJSONObject("data")
                 kioskPassword =
                     if (jsonData.has("kiosk_password")) jsonData.getString("kiosk_password") else utils.DEFAULT_KIOSK_PASSWORD
+                val logo =
+                    if (jsonData.has("logo")) jsonData.getString("logo") else utils.DEFAULT_LOGO
+                utils.setLogo(logo, logoView)
                 landingPortrait =
                     if (jsonData.has("landing_portrait")) jsonData.getString("landing_portrait") else ""
                 landingLandscape =
@@ -265,6 +282,7 @@ class MainActivity : AppCompatActivity() {
                 editor.putString("landingLandscape", landingLandscape)
                 editor.putString("scanPortrait", scanPortrait)
                 editor.putString("scanLandscape", scanLandscape)
+                editor.putString("logo", logo)
                 editor.apply()
             } else {
                 utils.showAlert(message)

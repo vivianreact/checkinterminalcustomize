@@ -4,8 +4,10 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.cardview.widget.CardView
 import com.ml.pa.checkinterminalcustomize.R
 
 @SuppressLint("UseSwitchCompatOrMaterialCode")
@@ -18,6 +20,10 @@ class SettingActivity : AppCompatActivity() {
     private lateinit var switchCheckInMode: Switch
     private lateinit var switchCameraFacing: Switch
     private lateinit var tfTerminalID: EditText
+    private lateinit var btnOK: Button
+    private lateinit var customAlertDialog: CardView
+    private lateinit var alertTitle: TextView
+    private lateinit var alertContent: TextView
 
     private var registrationDomain = ""
     private var checkpointCode = ""
@@ -33,6 +39,12 @@ class SettingActivity : AppCompatActivity() {
         tfTerminalID = findViewById(R.id.terminal_id)
         switchCheckInMode = findViewById(R.id.checkin_mode)
         switchCameraFacing = findViewById(R.id.camera_facing)
+        alertTitle = findViewById(R.id.alert_title)
+        alertContent = findViewById(R.id.alert_content)
+        customAlertDialog = findViewById(R.id.custom_alert_dialog)
+        customAlertDialog.visibility = View.GONE
+        btnOK = findViewById(R.id.alert_ok)
+        btnOK.setOnClickListener { customAlertDialog.visibility = View.GONE}
 
         btnSave = findViewById(R.id.btnSave)
         btnSave.setOnClickListener { setValue() }
@@ -76,7 +88,7 @@ class SettingActivity : AppCompatActivity() {
         cameraFacing = switchCameraFacing.isChecked
 
         if (registrationDomain == "" || checkpointCode == "" || terminalID == "") {
-            utils.showAlertBox("ERROR", "Please fill in all the fields")
+            utils.showAlertBox(customAlertDialog,btnOK,alertTitle, alertContent,"ERROR", "Please fill in all the fields")
             return
         }
 

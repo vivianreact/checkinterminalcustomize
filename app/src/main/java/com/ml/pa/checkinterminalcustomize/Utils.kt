@@ -13,11 +13,10 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.util.Log
 import android.view.Gravity
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.TextView
-import android.widget.Toast
+import android.view.View
+import android.widget.*
 import androidx.appcompat.app.AlertDialog
+import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
 import okhttp3.*
 import java.io.IOException
@@ -151,26 +150,39 @@ class Utils(private val context: Context) {
     }
 
     fun showAlertBox(
+        dialog:CardView,
+        btnOK: Button,
+        alertTitle: TextView,
+        alertContent: TextView,
         title: String,
         message: String,
         onClickAction: () -> Unit = {},
-        immediateAction: (dialog: DialogInterface) -> Unit = {}
+        immediateAction: ( dialog:CardView) -> Unit = {}
     ) {
         showAlert(message, true)
-        (context as Activity).runOnUiThread {
-            val dialogBuilder = AlertDialog.Builder(context)
-            dialogBuilder.setTitle(title)
-            dialogBuilder.setCancelable(false)
-            dialogBuilder.setPositiveButton(
-                context.getResources().getString(R.string.ok)
-            ) { _, _ -> onClickAction() }
-            dialogBuilder.setMessage(message)
-            dialogBuilder.create()
-            val dialog = dialogBuilder.show()
-            val messageText = dialog.findViewById<TextView>(R.id.message)
-            messageText!!.gravity = Gravity.CENTER
-            immediateAction(dialog)
+        dialog.visibility = View.VISIBLE
+        alertTitle.text = title
+        alertContent.text = message
+        btnOK.setOnClickListener{
+            onClickAction()
+            dialog.visibility = View.GONE
         }
+        immediateAction(dialog)
+
+//        (context as Activity).runOnUiThread {
+//            val dialogBuilder = AlertDialog.Builder(context)
+//            dialogBuilder.setTitle(title)
+//            dialogBuilder.setCancelable(false)
+//            dialogBuilder.setPositiveButton(
+//                context.getResources().getString(R.string.ok)
+//            ) { _, _ -> onClickAction() }
+//            dialogBuilder.setMessage(message)
+//            dialogBuilder.create()
+//            val dialog = dialogBuilder.show()
+//            val messageText = dialog.findViewById<TextView>(R.id.message)
+//            messageText!!.gravity = Gravity.CENTER
+//            immediateAction(dialog)
+//        }
     }
 
     fun getTextFieldString(textField: EditText): String {
@@ -181,6 +193,15 @@ class Utils(private val context: Context) {
         return textField.text.toString().trim().toInt()
     }
 
+    fun setLogo(logo: String, logoView: ImageView) {
+        if (logo != DEFAULT_LOGO && logo != "") {
+            getBitmapFromURL(logo) { mIcon11 ->
+                (context as Activity).runOnUiThread {
+                    logoView.setImageBitmap(mIcon11)
+                }
+            }
+        }
+    }
 
     fun setBackgroundLayout(landingLandscape: String, constraintLayout: ConstraintLayout) {
         if (landingLandscape != "") {

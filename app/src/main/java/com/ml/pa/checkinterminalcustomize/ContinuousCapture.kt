@@ -14,6 +14,7 @@ import android.os.Looper
 import android.text.InputType
 import android.view.*
 import android.widget.*
+import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.client.android.BeepManager
@@ -30,6 +31,11 @@ class ContinuousCapture : Activity() {
     private lateinit var viewfinderView: ViewfinderView
     private lateinit var btnHome: Button
     private lateinit var constraintLayout: ConstraintLayout
+    private lateinit var logoView: ImageView
+    private lateinit var btnOK: Button
+    private lateinit var customAlertDialog: CardView
+    private lateinit var alertTitle: TextView
+    private lateinit var alertContent: TextView
 
     private var lastText: String = ""
     private var registrationDomain = ""
@@ -51,6 +57,14 @@ class ContinuousCapture : Activity() {
         constraintLayout = findViewById(R.id.root_layout)
         progress = ProgressBar(this)
         beepManager = BeepManager(this)
+        logoView = findViewById(R.id.logo_view)
+        alertTitle = findViewById(R.id.alert_title)
+        alertContent = findViewById(R.id.alert_content)
+        customAlertDialog = findViewById(R.id.custom_alert_dialog)
+        customAlertDialog.visibility = View.GONE
+        btnOK = findViewById(R.id.alert_ok)
+        btnOK.setOnClickListener { customAlertDialog.visibility = View.GONE}
+
         btnHome = findViewById(R.id.btn_home)
         btnHome.setOnClickListener { setupHomeButton() }
         getValue()
@@ -180,7 +194,7 @@ class ContinuousCapture : Activity() {
                 dialog.dismiss()
                 onBackPressed()
             } else {
-                utils.showAlertBox("Wrong Password!", "Please contact administrator")
+                utils.showAlertBox(customAlertDialog,btnOK,alertTitle, alertContent,"Wrong Password!", "Please contact administrator")
             }
         }
         builder.setNegativeButton(
@@ -252,13 +266,13 @@ class ContinuousCapture : Activity() {
                 progressDialog.dismiss()
                 showProgress = false
             }
-            utils.showAlertBox(
+            utils.showAlertBox(customAlertDialog,btnOK,alertTitle, alertContent,
                 sTitle,
                 message, {}, { dialog ->
                     val handler = Handler(Looper.getMainLooper())
                     handler.postDelayed({
                         isScanning = false
-                        dialog.dismiss()
+                        dialog.visibility = View.GONE
                     }, utils.RESCAN_TIME)
                 }
             )
@@ -272,7 +286,7 @@ class ContinuousCapture : Activity() {
                 progressDialog.dismiss()
                 showProgress = false
             }
-            utils.showAlertBox(sTitle, message, { isScanning = false }, {})
+            utils.showAlertBox(customAlertDialog,btnOK,alertTitle, alertContent,sTitle, message, { isScanning = false }, {})
         }
     }
 
@@ -290,6 +304,8 @@ class ContinuousCapture : Activity() {
         registrationDomain = sharedPref.getString("registrationDomain", defRegistrationDomain)
             ?: defRegistrationDomain
         cameraFacing = sharedPref.getBoolean("cameraFacing", defCameraFacing)
+        val logo = sharedPref.getString("logo", utils.DEFAULT_LOGO) ?: utils.DEFAULT_LOGO
+        utils.setLogo(logo, logoView)
         scanPortrait = sharedPref.getString("scanPortrait", "") ?: ""
         scanLandscape = sharedPref.getString("scanLandscape", "") ?: ""
         val orientation: Int = resources.configuration.orientation
