@@ -1,10 +1,12 @@
 package com.ml.pa.checkinterminalcustomize
 
-import android.R
+
+import android.view.View
+import android.widget.*
+import androidx.cardview.widget.CardView
 import android.app.Activity
 import android.content.Context
 import android.content.Context.CONNECTIVITY_SERVICE
-import android.content.DialogInterface
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
@@ -12,11 +14,6 @@ import android.graphics.drawable.Drawable
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.util.Log
-import android.view.Gravity
-import android.view.View
-import android.widget.*
-import androidx.appcompat.app.AlertDialog
-import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
 import okhttp3.*
 import java.io.IOException
@@ -25,7 +22,6 @@ import java.net.InetAddress
 import java.net.URL
 import java.net.UnknownHostException
 import kotlin.concurrent.thread
-
 
 class Utils(private val context: Context) {
     val SHARED_PREFERENCE_NAME = "checkinterminalcustomize"
@@ -168,21 +164,6 @@ class Utils(private val context: Context) {
             dialog.visibility = View.GONE
         }
         immediateAction(dialog)
-
-//        (context as Activity).runOnUiThread {
-//            val dialogBuilder = AlertDialog.Builder(context)
-//            dialogBuilder.setTitle(title)
-//            dialogBuilder.setCancelable(false)
-//            dialogBuilder.setPositiveButton(
-//                context.getResources().getString(R.string.ok)
-//            ) { _, _ -> onClickAction() }
-//            dialogBuilder.setMessage(message)
-//            dialogBuilder.create()
-//            val dialog = dialogBuilder.show()
-//            val messageText = dialog.findViewById<TextView>(R.id.message)
-//            messageText!!.gravity = Gravity.CENTER
-//            immediateAction(dialog)
-//        }
     }
 
     fun getTextFieldString(textField: EditText): String {
@@ -202,7 +183,6 @@ class Utils(private val context: Context) {
             }
         }
     }
-
     fun setBackgroundLayout(landingLandscape: String, constraintLayout: ConstraintLayout) {
         if (landingLandscape != "") {
             getBitmapFromURL(landingLandscape) { mIcon11 ->
