@@ -24,10 +24,11 @@ class SettingActivity : AppCompatActivity() {
     private lateinit var customAlertDialog: CardView
     private lateinit var alertTitle: TextView
     private lateinit var alertContent: TextView
-
+    private lateinit var logoView: ImageView
     private var registrationDomain = ""
     private var checkpointCode = ""
     private var terminalID = ""
+    private var logo = ""
     private var checkInMode: Boolean = true
     private var cameraFacing: Boolean = false
 
@@ -43,6 +44,7 @@ class SettingActivity : AppCompatActivity() {
         alertContent = findViewById(R.id.alert_content)
         customAlertDialog = findViewById(R.id.custom_alert_dialog)
         customAlertDialog.visibility = View.GONE
+        logoView = findViewById(R.id.logo_view)
         btnOK = findViewById(R.id.alert_ok)
         btnOK.setOnClickListener { customAlertDialog.visibility = View.GONE}
 
@@ -72,6 +74,8 @@ class SettingActivity : AppCompatActivity() {
         terminalID = sharedPref.getString("terminalID", defTerminalID) ?: defTerminalID
         checkInMode = sharedPref.getBoolean("checkInMode", defCheckInMode)
         cameraFacing = sharedPref.getBoolean("cameraFacing", defCameraFacing)
+        logo = sharedPref.getString("logo", utils.DEFAULT_LOGO) ?: utils.DEFAULT_LOGO
+        utils.setLogo(logo, logoView)
 
         tfRegistrationDomain.setText(registrationDomain)
         tfCheckpointCode.setText(checkpointCode)
@@ -86,8 +90,7 @@ class SettingActivity : AppCompatActivity() {
         terminalID = utils.getTextFieldString(tfTerminalID)
         checkInMode = switchCheckInMode.isChecked
         cameraFacing = switchCameraFacing.isChecked
-
-        if (registrationDomain == "" || checkpointCode == "" || terminalID == "") {
+       if (registrationDomain == "" || checkpointCode == "" || terminalID == "") {
             utils.showAlertBox(customAlertDialog,btnOK,alertTitle, alertContent,"ERROR", "Please fill in all the fields")
             return
         }
@@ -100,6 +103,7 @@ class SettingActivity : AppCompatActivity() {
         editor.putString("terminalID", terminalID)
         editor.putBoolean("checkInMode", checkInMode)
         editor.putBoolean("cameraFacing", cameraFacing)
+        editor.putString("logo", logo)
         editor.apply()
 
         val intent = Intent(this, MainActivity::class.java)
